@@ -101,6 +101,26 @@ NODE_PLATFORM_TARGET := --target_arch=arm64 --target_platform=linux
 TOOLCHAIN_LDD_OPTS   := --root $(RASPBIAN)/
 endif # ($(TARGET),rpi3-armv8)
 
+ifeq ($(TARGET),rpi3-armv8-musl)
+TOOLCHAIN   ?= ${TFDIR}/bazel-$(shell basename "${TFDIR}")/external/MuslAarch64Gcc7/bin/aarch64-linux-musl-
+RASPBIAN    ?= $(abspath $(NC_DIR)/../alpine-aarch64-3.12)
+CFLAGS      := -march=armv8-a -mtune=cortex-a53 --sysroot $(RASPBIAN)
+CXXFLAGS    := $(CFLAGS)
+LDFLAGS     := -Wl,-rpath-link,$(RASPBIAN)/lib/ -Wl,-rpath-link,$(RASPBIAN)/usr/lib/
+
+SOX_CFLAGS  := -I$(RASPBIAN)/usr/include
+SOX_LDFLAGS := $(RASPBIAN)/usr/lib/libsox.so
+
+PYVER := $(shell python -c "import platform; maj, min, _ = platform.python_version_tuple(); print(maj+'.'+min);")
+PYTHON_PACKAGES      :=
+PYTHON_PATH          := PYTHONPATH=$(RASPBIAN)/usr/lib/python$(PYVER)/:$(RASPBIAN)/usr/lib/python3/dist-packages/
+PYTHON_SYSCONFIGDATA := _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata_m_linux_aarch64-linux-musl
+NUMPY_INCLUDE        := NUMPY_INCLUDE=$(RASPBIAN)/usr/include/python$(PYVER)/
+PYTHON_PLATFORM_NAME := --plat-name linux_aarch64
+NODE_PLATFORM_TARGET := --target_arch=arm64 --target_platform=linux
+TOOLCHAIN_LDD_OPTS   := --root $(RASPBIAN)/
+endif # ($(TARGET),rpi3-armv8-musl)
+
 ifeq ($(TARGET),ios-simulator)
 CFLAGS          := -isysroot $(shell xcrun -sdk iphonesimulator13.5 -show-sdk-path)
 SOX_CFLAGS      :=

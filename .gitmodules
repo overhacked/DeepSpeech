@@ -4,4 +4,4 @@
 	branch = r0.8
 [submodule "tensorflow"]
 	path = tensorflow
-	url = https://github.com/mozilla/tensorflow.git
+	url = https://github.com/overhacked/tensorflow.git
